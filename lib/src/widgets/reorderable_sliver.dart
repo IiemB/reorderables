@@ -384,12 +384,11 @@ class _ReorderableSliverListState extends State<ReorderableSliverList>
     }
 
     _scrollController = widget.controller ??
-        PrimaryScrollController.maybeOf(context) ??
+        PrimaryScrollController.of(context) ??
         ScrollController();
 
-    _attachedScrollPosition = _scrollController.hasClients
-        ? null
-        : Scrollable.maybeOf(context)?.position;
+    _attachedScrollPosition =
+        _scrollController.hasClients ? null : Scrollable.of(context)?.position;
 
     if (_attachedScrollPosition != null) {
       _scrollController.attach(_attachedScrollPosition!);
@@ -498,7 +497,7 @@ class _ReorderableSliverListState extends State<ReorderableSliverList>
   void _scrollTo(BuildContext context) {
     if (_scrolling) return;
     final RenderObject contextObject = context.findRenderObject()!;
-    final RenderAbstractViewport viewport =
+    final RenderAbstractViewport? viewport =
         RenderAbstractViewport.of(contextObject);
 
 //    if (_scrollController.positions.isEmpty) {
@@ -522,11 +521,11 @@ class _ReorderableSliverListState extends State<ReorderableSliverList>
     final double scrollOffset = _scrollController.offset;
     final double topOffset = max(
       _scrollController.position.minScrollExtent,
-      viewport.getOffsetToReveal(contextObject, 0.0).offset - margin,
+      (viewport?.getOffsetToReveal(contextObject, 0.0).offset ?? 0.0) - margin,
     );
     final double bottomOffset = min(
       _scrollController.position.maxScrollExtent,
-      viewport.getOffsetToReveal(contextObject, 1.0).offset + margin,
+      (viewport?.getOffsetToReveal(contextObject, 1.0).offset ?? 0.0) + margin,
     );
     final bool onScreen =
         scrollOffset <= topOffset && scrollOffset >= bottomOffset;
